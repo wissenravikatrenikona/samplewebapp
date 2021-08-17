@@ -1,0 +1,28 @@
+
+trigger:
+- '*'
+
+pool:
+  name: Default
+
+steps:
+- task: NuGetToolInstaller@1
+  displayName: 'Use NuGet installer '
+  inputs:
+    checkLatest: true
+    
+
+- task: NuGetCommand@2
+  displayName: 'NuGet restore'
+  
+- task: VSBuild@1
+  displayName: 'samplewebapp visualstudio build'
+  inputs:
+    solution: '*.sln'
+    msbuildArgs: '/p:DeployOnBuild=True /p:DeployDefaultTarget=WebPublish /p:WebPublishMethod=FileSystem /p:DeleteExistingFiles=True /p:publishUrl=$(Build.ArtifactStagingDirectory)\Dev\presentation'
+    clean: true
+  
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: drop'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)\Dev\presentation'
